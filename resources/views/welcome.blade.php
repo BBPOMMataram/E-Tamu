@@ -200,7 +200,7 @@
                 .then(({
                     data
                 }) => {
-                    if (data) {
+                    if (data.name) {
                         formAutoFill(data)
                     }
                 })

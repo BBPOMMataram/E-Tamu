@@ -7,6 +7,25 @@ use Illuminate\Http\Request;
 
 class GuestController extends Controller
 {
+    function index(Request $request) {
+        $validated = $request->validate([
+            'name' => ['string', 'nullable'],
+        ]);
+
+        $data = Guest::with('service')
+            ->latest();
+
+        if (isset($validated["name"])) {
+            $data = $data->where('name', $validated["name"]);
+        }
+
+        $numb_per_page = $request['numb_per_page'] ?? 10;
+        $data = $data->paginate($numb_per_page)->appends(array_merge($validated, ['numb_per_page' => $numb_per_page]));
+        $indexNumber = (request()->input('page', 1) - 1) * $numb_per_page;
+
+        return view('guest.index', compact('data', 'indexNumber', 'validated', 'numb_per_page'));
+    }
+    
     function new_guest(Request $request)
     {
 

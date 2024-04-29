@@ -200,33 +200,31 @@
                 .then(({
                     data
                 }) => {
-                    if (data.name) {
                         formAutoFill(data)
-                    }
                 })
                 .catch(err => console.log(err))
         })
 
         function formAutoFill(data) {
             const hpInput = document.getElementById('hp')
-            hpInput.value = data.hp
+            hpInput.value = data.hp || ''
 
             const emailInput = document.getElementById('email')
-            emailInput.value = data.email
+            emailInput.value = data.email || ''
 
             const instansiInput = document.getElementById('instansi')
-            instansiInput.value = data.company
+            instansiInput.value = data.company || ''
 
             const alamatInput = document.getElementById('alamat')
-            alamatInput.value = data.address
+            alamatInput.value = data.address || ''
 
             const pangkatInput = document.getElementById('pangkat')
-            pangkatInput.value = data.pangkat
+            pangkatInput.value = data.pangkat || ''
 
             const jabatanInput = document.getElementById('jabatan')
-            jabatanInput.value = data.jabatan
+            jabatanInput.value = data.jabatan || ''
 
-            layananInput.value = data.service
+            layananInput.value = data.service || ''
             toggleLayananCustom(layananInput.value)
         }
     </script>

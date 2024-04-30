@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PresensiController::class, 'form'])->name('presensi.form');
 Route::post('/', [PresensiController::class, 'store'])->name('presensi.store');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->prefix('security')->group(function(){
+    Route::get('/', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

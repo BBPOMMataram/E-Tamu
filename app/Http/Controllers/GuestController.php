@@ -72,7 +72,8 @@ class GuestController extends Controller
     // FUNGSI UNTUK FITUR AUTOFILL DATA TAMU SAAT MENGISI KOLOM NAMA
     public function getByName($name)
     {
-        $guest = Guest::where('name', $name)->first();
+        $guest = Guest::with('serviceLainnya')
+        ->where('name', $name)->orderBy('created_at', 'desc')->first();
         return response()->json($guest);
     }
 }

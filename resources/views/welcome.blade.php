@@ -25,7 +25,7 @@
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                 <header class="flex flex-col text-center items-center mt-10">
                     <img src="{{ asset('images/logo-without-label.png') }}" alt="logo BPOM" width="50px">
-                    <h1 class="mt-2 text-red-100 font-semibold">E Tamu - BBPOM di Mataram</h1>
+                    <h1 class="mt-2 text-red-100 font-semibold text-xl">E Tamu - BBPOM di Mataram</h1>
                 </header>
 
                 <main class="mt-6">
@@ -200,6 +200,7 @@
                 .then(({
                     data
                 }) => {
+                console.log('data:', data);
                         formAutoFill(data)
                 })
                 .catch(err => console.log(err))
@@ -226,6 +227,8 @@
 
             layananInput.value = data.service || ''
             toggleLayananCustom(layananInput.value)
+
+            layananCustom.value = data.service_lainnya ? data.service_lainnya.name : ''
         }
     </script>
     <script>

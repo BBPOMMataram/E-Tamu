@@ -18,4 +18,14 @@ class Guest extends Model
     {
         return $this->belongsTo(Service::class, 'service');
     }
+
+    /**
+     * Get the serviceLainnya associated with the Guest
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function serviceLainnya()
+    {
+        return $this->hasOne(ServiceLainnya::class);
+    }
 }

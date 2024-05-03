@@ -54,6 +54,7 @@ class PresensiController extends Controller
         $data->email = $request->email;
         $data->pangkat = $request->pangkat;
         $data->jabatan = $request->jabatan;
+        $data->distance = $request->distance;
 
         try {
             $path = $this->storeImage($request->imageUri);

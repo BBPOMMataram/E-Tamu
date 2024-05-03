@@ -14,6 +14,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script src="{{ asset('assets/js/webcam/webcam.min.js') }}"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
 <body class="font-sans antialiased dark:bg-black dark:text-white/50">
@@ -200,8 +206,8 @@
                 .then(({
                     data
                 }) => {
-                console.log('data:', data);
-                        formAutoFill(data)
+                    console.log('data:', data);
+                    formAutoFill(data)
                 })
                 .catch(err => console.log(err))
         })
@@ -248,6 +254,32 @@
                 e.preventDefault()
             }
         })
+    </script>
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position, null, {
+                enableHighAccuracy: !0
+            })
+
+        } else {
+            console.log('browser not support geolocation');
+        }
+
+        function position(point) {
+            var markerBbpom = L.marker([-8.587792, 116.116082])
+            var markerUser = L.marker([point.coords.latitude, point.coords.longitude])
+
+            const distance = (markerBbpom.getLatLng().distanceTo(markerUser.getLatLng())).toFixed(0)
+
+            // Membuat elemen input baru
+            const locationInput = document.createElement('input');
+            locationInput.type = 'hidden';
+            locationInput.name = 'distance'; // Ganti 'newField' dengan nama yang diinginkan
+            locationInput.value = distance
+
+            // Menambahkan elemen input baru ke dalam form
+            form.appendChild(locationInput);
+        }
     </script>
 </body>
 

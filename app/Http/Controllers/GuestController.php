@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GuestResource;
 use App\Models\Guest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GuestController extends Controller
 {
@@ -75,5 +77,42 @@ class GuestController extends Controller
         $guest = Guest::with('serviceLainnya')
         ->where('name', $name)->orderBy('created_at', 'desc')->first();
         return response()->json($guest);
+    }
+
+    function get_guests(Request $request) {
+        $guests = Guest::paginate();
+    
+        $year = $request->query("year");
+        if ($year) {
+            $guests = Guest::whereYear('guests.created_at', $year)
+                ->join('services', 'guests.service', '=', 'services.id')
+                ->select(
+                    DB::raw('MONTH(guests.created_at) as month'),
+                    DB::raw('count(*) as guests_total'),
+                    'services.name as service_name'
+                )
+                ->groupBy(DB::raw('MONTH(guests.created_at)'), 'services.name')
+                ->get();
+    
+            // Mengubah data menjadi format yang diinginkan
+            $data = [
+                'year' => $year,
+                'guests' => $guests->groupBy('month')->map(function ($items, $month) {
+                    return [
+                        'month' => date("F", mktime(0, 0, 0, $month, 10)), // Mengubah angka bulan menjadi nama bulan
+                        'services' => $items->map(function ($item) {
+                            return [
+                                'service_name' => $item->service_name,
+                                'total' => $item->guests_total,
+                            ];
+                        })
+                    ];
+                })->values()
+            ];
+    
+            return response()->json($data);
+        }
+    
+        return GuestResource::collection($guests);
     }
 }

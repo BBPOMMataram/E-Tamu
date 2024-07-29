@@ -9,3 +9,6 @@ Route::get('guest-book/search/{name}', [GuestController::class, 'getByName']); /
 
 // Route::post('guestbook', [GuestBookController::class, 'store']);
 // Route::get('guest-sijelapp', [GuestBookController::class, 'getAllGuests_Sijelapp']);
+
+// FOR CHART DASHBOARD
+Route::get('guests', [GuestController::class, 'get_guests']);

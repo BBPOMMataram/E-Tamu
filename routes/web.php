@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\ProfileController;
@@ -10,9 +11,7 @@ Route::get('/', [PresensiController::class, 'form'])->name('presensi.form');
 Route::post('/', [PresensiController::class, 'store'])->name('presensi.store');
 
 Route::middleware(['auth', 'verified'])->prefix('security')->group(function(){
-    Route::get('/', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/', DashboardController::class)->name('dashboard');
 });
 
 Route::middleware('auth')->prefix('security')->group(function () {

@@ -19,6 +19,12 @@ class Guest extends Model
         return $this->belongsTo(Service::class, 'service');
     }
 
+    // DIPAKE DI DASHBOARD KARENA ADA FIELD JUGA DENGAN NAMA service JADI DIBUAT LAGI BIAR GA BENTROK
+    public function services()
+    {
+        return $this->belongsTo(Service::class, 'service');
+    }
+
     /**
      * Get the serviceLainnya associated with the Guest
      *

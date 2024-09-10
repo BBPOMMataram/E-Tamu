@@ -9,8 +9,14 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    function __invoke() {
-        $guests = Guest::with(['services', 'serviceLainnya'])->get();
+    function __invoke(Request $request) {
+        $year = $request->query('year');
+        $month = $request->query('month');
+
+        $guests = Guest::with(['services', 'serviceLainnya'])
+        ->whereYear('created_at', $year)
+        ->whereMonth('created_at', $month)
+        ->get();
         $services = Service::all();
 
         $guests_today = Guest::whereDate('created_at', Carbon::today())->count();

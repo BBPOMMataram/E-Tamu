@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PresensiController::class, 'form'])->name('presensi.form');
 Route::post('/', [PresensiController::class, 'store'])->name('presensi.store');
 
-Route::middleware(['auth', 'verified'])->prefix('security')->group(function(){
-    Route::get('/', DashboardController::class)->name('dashboard');
-});
+Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
 Route::middleware('auth')->prefix('security')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -22,4 +20,4 @@ Route::middleware('auth')->prefix('security')->group(function () {
     Route::resource('guest', GuestController::class);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

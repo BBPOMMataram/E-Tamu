@@ -22,16 +22,16 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
-<body class="font-sans antialiased dark:bg-black dark:text-white/50">
-    <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
-        <img id="background" class="absolute -left-20 top-0 max-w-[877px]"
-            src="https://laravel.com/assets/img/welcome/background.svg" />
+<body class="font-sans antialiased bg-white">
+    <div class="">
+        {{-- <img id="background" class="absolute -left-20 top-0 max-w-[877px]"
+            src="https://laravel.com/assets/img/welcome/background.svg" /> --}}
         <div
             class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                 <header class="flex flex-col text-center items-center mt-10">
                     <img src="{{ asset('images/logo-without-label.png') }}" alt="logo BPOM" width="50px">
-                    <h1 class="mt-2 text-red-100 font-semibold text-xl">E Tamu - BBPOM di Mataram</h1>
+                    <h1 class="mt-2 text-black font-semibold text-xl">E Tamu - BBPOM di Mataram</h1>
                 </header>
 
                 <main class="mt-6">
@@ -39,7 +39,7 @@
                         @csrf
                         <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
                             <div href="#" id="docs-card"
-                                class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]">
+                                class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-gradient-to-r from-purple-700 via-purple-600 to-blue-500 p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10">
                                 <div class="relative flex items-center gap-6 lg:items-end w-full">
                                     <div id="docs-card-content" class="flex items-start lg:flex-col w-full">
                                         <div class="pt-3 sm:pt-5 lg:pt-0 w-full">
@@ -105,35 +105,46 @@
                             </div>
 
                             <div
-                                class="flex justify-center text-center rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]">
+                                class="bg-gradient-to-r from-lime-500 to-green-500 shadow-md rounded-lg p-6 text-center">
+                                <h2 class="text-xl font-semibold text-white">
+                                    TOTAL PENGUNJUNG
+                                </h2>
+                                <p class="text-3xl font-bold text-white" id="guests_this_year"></p>
+                                <p class="text-sm text-gray-200">pengunjung</p>
+                                <a href="{{ route('dashboard') }}" class="btn mt-2 btn-success">Lihat</a>
+                            </div>
 
-                                <div class="pt-3 sm:pt-5 flex flex-col">
-                                    <h2 class="text-xl font-semibold text-black dark:text-white mb-0">SELFIE</h2>
-                                    <div class="text-xl">📷</div>
+                            <div class="flex flex-col gap-4">
+                                <div
+                                    class="flex justify-center text-center rounded-lg p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 from-pink-500 via-pink-400 to-red-500 bg-gradient-to-t">
+                                    <div class="pt-3 sm:pt-5 flex flex-col">
+                                        <h2 class="text-xl font-semibold text-black dark:text-white mb-0">SELFIE</h2>
+                                        <div class="text-xl">📷</div>
 
-                                    <div id="my_camera" class="" style="width:320px; height:240px;"></div>
-                                    <div id="my_result"></div>
+                                        <div id="my_camera" class="" style="width:320px; height:240px;"></div>
+                                        <div id="my_result"></div>
 
-                                    <div class="flex w-full justify-between mt-2">
-                                        <button type="button" onclick="take_snapshot()"
-                                            class="flex-1 bg-[#FF2D20]/10 px-4 py-2 hover:bg-[#ff2b205d] rounded-l">SNAP</button>
-                                        <button type="button" onclick="reset_snapshot()"
-                                            class="flex-1 bg-[#6d5c5b]/10 px-4 py-2 hover:bg-[#6d5c5b5d] rounded-r">ULANG</button>
+                                        <div class="flex w-full justify-between mt-2">
+                                            <button type="button" onclick="take_snapshot()"
+                                                class="flex-1 bg-[#FF2D20]/10 px-4 py-2 hover:bg-[#ff2b205d] rounded-l">SNAP</button>
+                                            <button type="button" onclick="reset_snapshot()"
+                                                class="flex-1 bg-[#6d5c5b]/10 px-4 py-2 hover:bg-[#6d5c5b5d] rounded-r">ULANG</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="flex w-full justify-around">
-                                <button type="submit"
-                                    class="bg-[#FF2D20]/10 px-12 py-3 rounded hover:bg-[#ff2b205d]">SIMPAN</button>
-                                <button type="reset"
-                                    class="bg-[#6d5c5b]/10 px-12 py-3 rounded hover:bg-[#6d5c5b5d]">RESET</button>
+                                <div class="flex w-full justify-around">
+                                    <button type="submit"
+                                        class="bg-[#FF2D20] px-12 py-3 rounded hover:bg-opacity-90 text-white">SIMPAN</button>
+                                    <button type="reset"
+                                        class="bg-[#6d5c5b] px-12 py-3 rounded hover:bg-opacity-90 text-white">RESET</button>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </main>
 
-                <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-                    ❤️ BBPOM DI MATARAM
+                <footer class="py-16 text-center text-sm text-black">
+                    <a href="https://mataram.pom.go.id">❤️ BBPOM DI MATARAM</a>
                 </footer>
             </div>
         </div>
@@ -280,6 +291,19 @@
             // Menambahkan elemen input baru ke dalam form
             form.appendChild(locationInput);
         }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let count = {{ $guests_this_year }};
+            let counter = new CountUp('guests_this_year', count, {
+                duration: 5
+            }); // Duration in seconds
+            if (!counter.error) {
+                counter.start();
+            } else {
+                console.error(counter.error);
+            }
+        });
     </script>
 </body>
 

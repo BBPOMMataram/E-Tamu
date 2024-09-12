@@ -16,7 +16,9 @@ class PresensiController extends Controller
         $services = Service::all();
         $guests = Guest::select('name')->distinct()->orderBy('name')->get();
 
-        return view('welcome', compact('services', 'guests'));
+        $guests_this_year = Guest::whereYear('created_at', now()->year)->count();
+
+        return view('welcome', compact('services', 'guests', 'guests_this_year'));
     }
 
     function storeImage($imageUri)

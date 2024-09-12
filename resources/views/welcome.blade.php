@@ -30,8 +30,8 @@
             class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                 <header class="flex flex-col text-center items-center mt-10">
-                    <img src="{{ asset('images/logo-without-label.png') }}" alt="logo BPOM" width="50px">
-                    <h1 class="mt-2 text-black font-semibold text-xl">E Tamu - BBPOM di Mataram</h1>
+                    <img src="{{ asset('images/logo-without-label.png') }}" alt="logo BPOM" width="70px">
+                    <h1 class="mt-2 text-black font-bold text-3xl">E Tamu - BBPOM di Mataram</h1>
                 </header>
 
                 <main class="mt-6">
@@ -39,7 +39,7 @@
                         @csrf
                         <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
                             <div href="#" id="docs-card"
-                                class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-gradient-to-r from-purple-700 via-purple-600 to-blue-500 p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10">
+                                class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-gradient-to-r from-purple-500 via-purple-400 to-blue-400 p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10">
                                 <div class="relative flex items-center gap-6 lg:items-end w-full">
                                     <div id="docs-card-content" class="flex items-start lg:flex-col w-full">
                                         <div class="pt-3 sm:pt-5 lg:pt-0 w-full">
@@ -105,7 +105,7 @@
                             </div>
 
                             <div
-                                class="bg-gradient-to-r from-lime-500 to-green-500 shadow-md rounded-lg p-6 text-center">
+                                class="bg-gradient-to-r from-lime-400 via-green-400 to-green-500 shadow-md rounded-lg p-6 text-center">
                                 <h2 class="text-xl font-semibold text-white">
                                     TOTAL PENGUNJUNG
                                 </h2>
@@ -116,7 +116,7 @@
 
                             <div class="flex flex-col gap-4">
                                 <div
-                                    class="flex justify-center text-center rounded-lg p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 from-pink-500 via-pink-400 to-red-500 bg-gradient-to-t">
+                                    class="flex justify-center text-center rounded-lg p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 from-pink-400 via-pink-300 to-red-400 bg-gradient-to-t text-gray-800">
                                     <div class="pt-3 sm:pt-5 flex flex-col">
                                         <h2 class="text-xl font-semibold text-black dark:text-white mb-0">SELFIE</h2>
                                         <div class="text-xl">📷</div>

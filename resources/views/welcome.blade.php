@@ -39,7 +39,7 @@
                         @csrf
                         <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
                             <div href="#" id="docs-card"
-                                class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-gradient-to-r from-purple-500 via-purple-400 to-blue-400 p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10">
+                                class="order-1 flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-gradient-to-r from-purple-500 via-purple-400 to-blue-400 p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10">
                                 <div class="relative flex items-center gap-6 lg:items-end w-full">
                                     <div id="docs-card-content" class="flex items-start lg:flex-col w-full">
                                         <div class="pt-3 sm:pt-5 lg:pt-0 w-full">
@@ -114,7 +114,7 @@
                                 <a href="{{ route('dashboard') }}" class="btn mt-2 btn-success">Lihat</a>
                             </div>
 
-                            <div class="flex flex-col gap-4">
+                            <div class="order-2 flex flex-col gap-4">
                                 <div
                                     class="flex justify-center text-center rounded-lg p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 from-pink-400 via-pink-300 to-red-400 bg-gradient-to-t text-gray-800">
                                     <div class="pt-3 sm:pt-5 flex flex-col">

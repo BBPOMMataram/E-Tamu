@@ -90,7 +90,7 @@
                                                     <label class="capitalize mb-1" for="alamat">alamat</label>
                                                     <input type="text" name="alamat" id="alamat" class="rounded">
                                                 </div>
-                                                <div class="flex flex-col mb-4">
+                                                {{-- <div class="flex flex-col mb-4">
                                                     <label class="capitalize mb-1" for="pangkat">pangkat</label>
                                                     <input type="text" name="pangkat" id="pangkat" class="rounded">
                                                 </div>
@@ -98,7 +98,7 @@
                                                     <label class="capitalize mb-1" for="jabatan">jabatan</label>
                                                     <input type="text" name="jabatan" id="jabatan"
                                                         class="rounded">
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>

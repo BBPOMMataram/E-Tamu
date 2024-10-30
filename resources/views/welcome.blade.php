@@ -134,10 +134,17 @@
                                     </div>
                                 </div>
                                 <div class="flex w-full justify-around">
-                                    <button type="submit"
-                                        class="bg-[#FF2D20] px-12 py-3 rounded hover:bg-opacity-90 text-white">SIMPAN</button>
-                                    <button type="reset"
-                                        class="bg-[#6d5c5b] px-12 py-3 rounded hover:bg-opacity-90 text-white">RESET</button>
+                                    <div class="flex flex-col">
+                                        <p class="text-sm text-center">
+                                            Dengan menekan tombol SIMPAN, saya bersedia mematuhi <a class="text-pink-300" href="https://drive.google.com/open?id=11m-Ef8JQqDoXWt_AQYNPScooohOz8kI1&usp=drive_fs">peraturan dan norma K3</a> yang berlaku di BBPOM di Mataram
+                                        </p>
+                                        <div class="text-center">
+                                            <button type="submit"
+                                            class="bg-[#FF2D20] px-12 py-3 rounded hover:bg-opacity-90 text-white">SIMPAN</button>
+                                            <button type="reset"
+                                            class="bg-[#6d5c5b] px-12 py-3 rounded hover:bg-opacity-90 text-white">RESET</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

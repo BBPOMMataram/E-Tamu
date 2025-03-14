@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\GuestsExport;
 use App\Models\Guest;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DashboardController extends Controller
 {
@@ -28,7 +30,14 @@ class DashboardController extends Controller
         $services = Service::all();
 
         $guests_today = Guest::whereDate('created_at', Carbon::today())->count();
+
+        $guestsTable = Guest::paginate(10); //guest untuk table pagination
         
-        return view('dashboard', compact('guests', 'services', 'guests_today'));
+        return view('dashboard', compact('guests', 'services', 'guests_today', 'guestsTable'));
+    }
+
+
+    function Guest_download(){
+        return Excel::download(new GuestsExport, 'guests.xlsx');
     }
 }

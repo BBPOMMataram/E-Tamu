@@ -18,6 +18,7 @@ Route::middleware('auth')->prefix('security')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('guest', GuestController::class);
+    Route::get('guest-download', [DashboardController::class, 'Guest_download'])->name('guest.download');
 });
 
 require __DIR__ . '/auth.php';

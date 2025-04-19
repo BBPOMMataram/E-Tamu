@@ -32,6 +32,7 @@
                                 <option value="">Pilih Tahun</option>
                                 <option value="2023" @if (request()->query('year') === '2023') selected @endif>2023</option>
                                 <option value="2024" @if (request()->query('year') === '2024') selected @endif>2024</option>
+                                <option value="2025" @if (request()->query('year') === '2025') selected @endif>2025</option>
                             </select>
                             <select name="month" id="month" class="rounded text-gray-700">
                                 <option value="">Pilih Bulan</option>

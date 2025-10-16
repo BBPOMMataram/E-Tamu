@@ -122,6 +122,8 @@
                                         <h2 class="text-xl font-semibold text-black dark:text-white mb-0">SELFIE</h2>
                                         <div class="text-xl">📷</div>
 
+
+                                        <select id="cameraSelect" class="my-2 border rounded p-1"></select>
                                         <div id="my_camera" class="" style="width:320px; height:240px;"></div>
                                         <div id="my_result"></div>
 
@@ -136,13 +138,16 @@
                                 <div class="flex w-full justify-around">
                                     <div class="flex flex-col">
                                         <p class="text-sm text-center">
-                                            Dengan menekan tombol SIMPAN, saya bersedia mematuhi <a class="text-pink-300" href="https://drive.google.com/open?id=11m-Ef8JQqDoXWt_AQYNPScooohOz8kI1&usp=drive_fs">peraturan dan norma K3</a> yang berlaku di BBPOM di Mataram
+                                            Dengan menekan tombol SIMPAN, saya bersedia mematuhi <a
+                                                class="text-pink-300"
+                                                href="https://drive.google.com/open?id=11m-Ef8JQqDoXWt_AQYNPScooohOz8kI1&usp=drive_fs">peraturan
+                                                dan norma K3</a> yang berlaku di BBPOM di Mataram
                                         </p>
                                         <div class="text-center">
                                             <button type="submit"
-                                            class="bg-[#FF2D20] px-12 py-3 rounded hover:bg-opacity-90 text-white">SIMPAN</button>
+                                                class="bg-[#FF2D20] px-12 py-3 rounded hover:bg-opacity-90 text-white">SIMPAN</button>
                                             <button type="reset"
-                                            class="bg-[#6d5c5b] px-12 py-3 rounded hover:bg-opacity-90 text-white">RESET</button>
+                                                class="bg-[#6d5c5b] px-12 py-3 rounded hover:bg-opacity-90 text-white">RESET</button>
                                         </div>
                                     </div>
                                 </div>
@@ -176,25 +181,69 @@
 
     <script language="JavaScript">
         // manage webcam
-        let imageUri = ''
+        let imageUri = '';
+        let currentDeviceId = null;
 
-        Webcam.attach('#my_camera');
+        // ✅ Dapatkan semua kamera
+        async function loadCameras() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(d => d.kind === 'videoinput');
+            const select = document.getElementById('cameraSelect');
 
-        function take_snapshot() {
-            Webcam.snap(function(data_uri) {
-                document.getElementById('my_camera').innerHTML = '<img src="' + data_uri + '"/>';
-                imageUri = data_uri
+            select.innerHTML = '';
+            videoDevices.forEach((device, index) => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.text = device.label || `Kamera ${index + 1}`;
+                select.appendChild(option);
             });
+
+            // set default kamera
+            if (videoDevices.length > 0) {
+                currentDeviceId = videoDevices[0].deviceId;
+                attachCamera(currentDeviceId);
+            }
         }
 
-        function reset_snapshot() {
-            Webcam.reset()
+        // ✅ Pasang kamera ke div
+        function attachCamera(deviceId) {
+            Webcam.reset(); // reset kamera aktif sebelumnya
+            Webcam.set({
+                width: 320,
+                height: 240,
+                image_format: 'jpeg',
+                jpeg_quality: 90,
+                constraints: {
+                    deviceId: deviceId ? {
+                        exact: deviceId
+                    } : undefined
+                }
+            });
             Webcam.attach('#my_camera');
         }
 
-        Webcam.set({
-            fps: 45
-        })
+        // ✅ Ganti kamera saat dropdown berubah
+        document.getElementById('cameraSelect').addEventListener('change', function() {
+            currentDeviceId = this.value;
+            attachCamera(currentDeviceId);
+        });
+
+        // ✅ Ambil snapshot
+        function take_snapshot() {
+            Webcam.snap(function(data_uri) {
+                document.getElementById('my_camera').innerHTML =
+                    '<img src="' + data_uri + '" class="rounded"/>';
+                imageUri = data_uri;
+            });
+        }
+
+        // ✅ Reset snapshot
+        function reset_snapshot() {
+            attachCamera(currentDeviceId);
+        }
+
+        // ✅ Jalankan pertama kali
+        loadCameras();
     </script>
     <script>
         // manage layanan input
@@ -313,7 +362,7 @@
             }
         });
     </script>
-    
+
     <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
 </body>
 

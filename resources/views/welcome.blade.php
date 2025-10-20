@@ -122,8 +122,7 @@
                                         <h2 class="text-xl font-semibold text-black dark:text-white mb-0">SELFIE</h2>
                                         <div class="text-xl">📷</div>
 
-
-                                        <select id="cameraSelect" class="my-2 border rounded p-1"></select>
+                                        <select id="cameraSelect" class="my-2 mb-1 border rounded p-1"></select>
                                         <div id="my_camera" class="" style="width:320px; height:240px;"></div>
                                         <div id="my_result"></div>
 
@@ -177,6 +176,30 @@
             </p>
 
         </div>
+    @endif
+
+    @if (session('status') === 'new-guest-saved')
+        @include('survey-form')
+
+        <script>
+            const overlay = document.getElementById('popup-overlay');
+            overlay.classList.toggle('hidden');
+        </script>
+    @endif
+
+    @if (session('status') === 'survey-saved')
+        <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 10000)"
+            class="fixed inset-0 my-10 mx-32 m-fit h-fit p-10 bg-[#20f8fff3] text-black px-12 py-3 rounded">
+            <h2 class="font-bold mb-3">Data Tersimpan</h2>
+            <p>
+                Terima kasih atas penilaian Anda! {{ session('name') }} 👋
+            </p>
+        </div>
+
+        <script>
+            const overlay = document.getElementById('popup-overlay');
+            overlay.classList.toggle('hidden');
+        </script>
     @endif
 
     <script language="JavaScript">

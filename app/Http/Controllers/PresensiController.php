@@ -75,6 +75,15 @@ class PresensiController extends Controller
             $new_service_lainnya->save();
         }
 
-        return redirect()->route('presensi.form')->with(['status' => 'new-guest-saved', 'name' => $data->name]);
+        return redirect()->route('presensi.form')->with(['status' => 'new-guest-saved', 'name' => $data->name, 'id' => $data->id]);
+    }
+
+    function store_survey(Request $request)
+    {
+        $guest = Guest::find($request->guest_id);
+        $guest->rating = $request->rating;
+        $guest->save();
+
+        return redirect()->route('presensi.form')->with(['status' => 'survey-saved', 'name' => $guest->name]);
     }
 }

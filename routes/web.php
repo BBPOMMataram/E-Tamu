@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PresensiController::class, 'form'])->name('presensi.form');
 Route::post('/', [PresensiController::class, 'store'])->name('presensi.store');
+Route::post('/survey', [PresensiController::class, 'store_survey'])->name('presensi.store_survey');
 
 Route::get('/dashboard', DashboardController::class)->name('dashboard');
 

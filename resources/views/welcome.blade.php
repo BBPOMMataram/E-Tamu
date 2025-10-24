@@ -178,9 +178,8 @@
         </div>
     @endif
 
+    @include('survey-form')
     @if (session('status') === 'new-guest-saved')
-        @include('survey-form')
-
         <script>
             const overlay = document.getElementById('popup-overlay');
             overlay.classList.toggle('hidden');

@@ -142,47 +142,52 @@
             </div>
 
             @auth
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <div class="overflow-x-auto" id="guesttable">
-                    <table class="min-w-full border-collapse w-full">
-                        <thead>
-                            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                <th class="py-3 px-6 text-left">Nama</th>
-                                <th class="py-3 px-6 text-left">HP</th>
-                                <th class="py-3 px-6 text-left">Instansi</th>
-                                <th class="py-3 px-6 text-left">Keperluan</th>
-                                <th class="py-3 px-6 text-left">Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light">
-                            @foreach ($guestsTable as $guest)
-                                <tr class="border-b border-gray-200 hover:bg-gray-100">
-                                    <td class="py-3 px-6 text-left">{{ $guest->name }}</td>
-                                    <td class="py-3 px-6 text-left">{{ $guest->hp }}</td>
-                                    <td class="py-3 px-6 text-left">{{ $guest->company }}</td>
-                                    <td class="py-3 px-6 text-left">
-                                        {{ $services->where('id', $guest->service)->first()->name ?? '-' }}</td>
-                                    <td class="py-3 px-6 text-left">{{ $guest->created_at->format('d F Y') }}</td>
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div class="overflow-x-auto" id="guesttable">
+                        <table class="min-w-full border-collapse w-full">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left">Nama</th>
+                                    <th class="py-3 px-6 text-left">HP</th>
+                                    <th class="py-3 px-6 text-left">Instansi</th>
+                                    <th class="py-3 px-6 text-left">Keperluan</th>
+                                    <th class="py-3 px-6 text-left">Tanggal</th>
+                                    <th class="py-3 px-6 text-left">Foto</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="m-4">{{ $guestsTable->links() }}</div>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm font-light">
+                                @foreach ($guestsTable as $guest)
+                                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                        <td class="py-3 px-6 text-left">{{ $guest->name }}</td>
+                                        <td class="py-3 px-6 text-left">{{ $guest->hp }}</td>
+                                        <td class="py-3 px-6 text-left">{{ $guest->company }}</td>
+                                        <td class="py-3 px-6 text-left">
+                                            {{ $services->where('id', $guest->service)->first()->name ?? '-' }}</td>
+                                        <td class="py-3 px-6 text-left">{{ $guest->created_at->format('d F Y') }}</td>
+                                        <td>
+                                            <img src="{{ Storage::url($guest->selfie) }}"
+                                                alt="{{ 'Foto ' . $guest->name }}" class="w-32 h-32 object-contain">
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="m-4">{{ $guestsTable->links() }}</div>
 
-                <button class="bg-blue-500 text-blue-100 py-2 px-4 m-4 rounded">
-                    <a href="{{ route('guest.download') }}">Download xlsx</a>
-                </button>
-            </div>
+                    <button class="bg-blue-500 text-blue-100 py-2 px-4 m-4 rounded">
+                        <a href="{{ route('guest.download') }}">Download xlsx</a>
+                    </button>
+                </div>
             @endauth
             @guest
-            <div class="bg-white shadow-md rounded-lg p-4 text-center">
-                <h2 class="text-xl font-semibold hover:text-blue-500">
-                    <a href="{{ route('login') }}">
-                        Silahkan login untuk melihat data tamu
-                    </a>
-                </h2>
-            </div>   
+                <div class="bg-white shadow-md rounded-lg p-4 text-center">
+                    <h2 class="text-xl font-semibold hover:text-blue-500">
+                        <a href="{{ route('login') }}">
+                            Silahkan login untuk melihat data tamu
+                        </a>
+                    </h2>
+                </div>
             @endguest
         </div>
     </div>

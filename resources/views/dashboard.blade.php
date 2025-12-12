@@ -151,7 +151,7 @@
                                     <th class="py-3 px-6 text-left">HP</th>
                                     <th class="py-3 px-6 text-left">Instansi</th>
                                     <th class="py-3 px-6 text-left">Keperluan</th>
-                                    <th class="py-3 px-6 text-left">Tanggal</th>
+                                    <th class="py-3 px-6 text-left">Waktu Datang</th>
                                     <th class="py-3 px-6 text-left">Foto</th>
                                 </tr>
                             </thead>
@@ -163,7 +163,11 @@
                                         <td class="py-3 px-6 text-left">{{ $guest->company }}</td>
                                         <td class="py-3 px-6 text-left">
                                             {{ $services->where('id', $guest->service)->first()->name ?? '-' }}</td>
-                                        <td class="py-3 px-6 text-left">{{ $guest->created_at->format('d F Y') }}</td>
+                                        <td class="py-3 px-6 text-left">
+                                            {{ $guest->created_at->translatedFormat('l, d F Y') }}
+                                            <br />
+                                            {{ $guest->created_at->format('H:i') }}
+                                        </td>
                                         <td>
                                             <img src="{{ Storage::url($guest->selfie) }}"
                                                 alt="{{ 'Foto ' . $guest->name }}" class="w-32 h-32 object-contain">

@@ -146,6 +146,11 @@
 
             <div class="bg-white shadow-md rounded-lg p-6 mb-6">
                 <canvas id="guestChart" height="100"></canvas>
+                <div class="mt-4 text-center">
+                    <button id="downloadChart" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                        Download Gambar Bagan
+                    </button>
+                </div>
             </div>
 
             <script>
@@ -206,6 +211,14 @@
                                 },
                             },
                         },
+                    });
+
+                    document.getElementById('downloadChart').addEventListener('click', function () {
+                        var canvas = document.getElementById('guestChart');
+                        var link = document.createElement('a');
+                        link.download = 'bagan-tamu.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
                     });
                 });
             </script>

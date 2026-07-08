@@ -17,6 +17,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "chart.js": "^4.5.1",
         "countup.js": "^2.8.0"
     }
 }

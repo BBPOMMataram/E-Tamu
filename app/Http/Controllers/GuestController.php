@@ -80,39 +80,28 @@ class GuestController extends Controller
     }
 
     function get_guests(Request $request) {
-        $guests = Guest::paginate();
-    
-        $year = $request->query("year");
-        if ($year) {
-            $guests = Guest::whereYear('guests.created_at', $year)
-                ->join('services', 'guests.service', '=', 'services.id')
-                ->select(
-                    DB::raw('MONTH(guests.created_at) as month'),
-                    DB::raw('count(*) as guests_total'),
-                    'services.name as service_name'
-                )
-                ->groupBy(DB::raw('MONTH(guests.created_at)'), 'services.name')
-                ->get();
-    
-            // Mengubah data menjadi format yang diinginkan
-            $data = [
-                'year' => $year,
-                'guests' => $guests->groupBy('month')->map(function ($items, $month) {
+        $guests = Guest::join('services', 'guests.service', '=', 'services.id')
+            ->select(
+                DB::raw('YEAR(guests.created_at) as year'),
+                DB::raw('count(*) as guests_total'),
+                'services.name as service_name'
+            )
+            ->groupBy(DB::raw('YEAR(guests.created_at)'), 'services.name')
+            ->orderBy(DB::raw('YEAR(guests.created_at)'))
+            ->get();
+
+        $data = $guests->groupBy('year')->map(function ($items, $yr) {
+            return [
+                'year' => (string) $yr,
+                'services' => $items->map(function ($item) {
                     return [
-                        'month' => date("F", mktime(0, 0, 0, $month, 10)), // Mengubah angka bulan menjadi nama bulan
-                        'services' => $items->map(function ($item) {
-                            return [
-                                'service_name' => $item->service_name,
-                                'total' => $item->guests_total,
-                            ];
-                        })
+                        'service_name' => $item->service_name,
+                        'total' => $item->guests_total,
                     ];
-                })->values()
+                })
             ];
-    
-            return response()->json($data);
-        }
-    
-        return GuestResource::collection($guests);
+        })->values();
+
+        return response()->json($data);
     }
 }

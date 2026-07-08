@@ -137,6 +137,75 @@
                 </div>
             </div>
 
+            {{-- Chart Section --}}
+            <div class="bg-gray-800 text-white shadow-md rounded-lg p-4 text-center mb-4">
+                <h2 class="text-xl font-semibold">
+                    Statistik Tamu Per Tahun
+                </h2>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+                <canvas id="guestChart" height="100"></canvas>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    fetch('/api/guests')
+                        .then(function (res) { return res.json(); })
+                        .then(function (data) {
+                            if (!data || data.length === 0) {
+                                document.getElementById('guestChart').parentElement.innerHTML =
+                                    '<p class="text-gray-500 text-center">Tidak ada data tamu</p>';
+                                return;
+                            }
+
+                            var labels = data.map(function (d) { return d.year; });
+
+                            var serviceMap = {};
+                            data.forEach(function (d) {
+                                d.services.forEach(function (s) {
+                                    if (!serviceMap[s.service_name]) serviceMap[s.service_name] = {};
+                                    serviceMap[s.service_name][d.year] = s.total;
+                                });
+                            });
+
+                            var serviceNames = Object.keys(serviceMap);
+                            var colors = [
+                                '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
+                                '#6366f1', '#06b6d4', '#14b8a6', '#84cc16'
+                            ];
+
+                            var datasets = serviceNames.map(function (name, idx) {
+                                return {
+                                    label: name,
+                                    data: labels.map(function (yr) { return serviceMap[name][yr] || 0; }),
+                                    backgroundColor: colors[idx % colors.length],
+                                };
+                            });
+
+                            new Chart(document.getElementById('guestChart'), {
+                                type: 'bar',
+                                data: { labels: labels, datasets: datasets },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: 'bottom' },
+                                        title: { display: true, text: 'Jumlah Tamu Per Tahun' },
+                                    },
+                                    scales: {
+                                        x: { stacked: true },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            ticks: { stepSize: 1 },
+                                        },
+                                    },
+                                },
+                            });
+                        });
+                });
+            </script>
+
             <div class="bg-gray-800 text-white shadow-md rounded-lg p-4 text-center mb-4">
                 <h2 class="text-xl font-semibold">
                     Tabel Data Tamu

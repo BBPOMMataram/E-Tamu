@@ -231,6 +231,11 @@
 
             @auth
                 <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div class="m-4">
+                        <a href="{{ route('guest.download') }}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded inline-block">
+                            Download xlsx
+                        </a>
+                    </div>
                     <div class="overflow-x-auto" id="guesttable">
                         <table class="min-w-full border-collapse w-full">
                             <thead>
@@ -266,10 +271,6 @@
                         </table>
                     </div>
                     <div class="m-4">{{ $guestsTable->links() }}</div>
-
-                    <button class="bg-blue-500 text-blue-100 py-2 px-4 m-4 rounded">
-                        <a href="{{ route('guest.download') }}">Download xlsx</a>
-                    </button>
                 </div>
             @endauth
             @guest

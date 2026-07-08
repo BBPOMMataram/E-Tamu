@@ -80,27 +80,70 @@ class GuestController extends Controller
     }
 
     function get_guests(Request $request) {
-        $guests = Guest::join('services', 'guests.service', '=', 'services.id')
+        $year = $request->query("year");
+        $month = $request->query("month");
+
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $query = Guest::join('services', 'guests.service', '=', 'services.id')
             ->select(
                 DB::raw('YEAR(guests.created_at) as year'),
+                DB::raw('MONTH(guests.created_at) as month'),
                 DB::raw('count(*) as guests_total'),
                 'services.name as service_name'
+            );
+
+        if ($year) {
+            $query->whereYear('guests.created_at', $year);
+        }
+
+        if ($month) {
+            $query->whereMonth('guests.created_at', $month);
+        }
+
+        $groupBy = [$year && !$month ? 'month' : 'year'];
+
+        $guests = $query->groupBy(
+                array_merge($groupBy, ['services.name'])
             )
-            ->groupBy(DB::raw('YEAR(guests.created_at)'), 'services.name')
-            ->orderBy(DB::raw('YEAR(guests.created_at)'))
+            ->orderByRaw($groupBy[0] === 'year' ? 'YEAR(guests.created_at)' : 'MONTH(guests.created_at)')
             ->get();
 
-        $data = $guests->groupBy('year')->map(function ($items, $yr) {
-            return [
-                'year' => (string) $yr,
-                'services' => $items->map(function ($item) {
+        if ($year && !$month) {
+            $data = [
+                'mode' => 'month',
+                'items' => $guests->groupBy('month')->map(function ($items, $m) use ($monthNames) {
                     return [
-                        'service_name' => $item->service_name,
-                        'total' => $item->guests_total,
+                        'label' => $monthNames[(int) $m] ?? $m,
+                        'services' => $items->map(function ($item) {
+                            return [
+                                'service_name' => $item->service_name,
+                                'total' => $item->guests_total,
+                            ];
+                        })
                     ];
-                })
+                })->values()
             ];
-        })->values();
+        } else {
+            $data = [
+                'mode' => 'year',
+                'items' => $guests->groupBy('year')->map(function ($items, $yr) {
+                    return [
+                        'label' => (string) $yr,
+                        'services' => $items->map(function ($item) {
+                            return [
+                                'service_name' => $item->service_name,
+                                'total' => $item->guests_total,
+                            ];
+                        })
+                    ];
+                })->values()
+            ];
+        }
 
         return response()->json($data);
     }

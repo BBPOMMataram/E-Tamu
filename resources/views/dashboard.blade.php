@@ -150,59 +150,63 @@
 
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
-                    fetch('/api/guests')
-                        .then(function (res) { return res.json(); })
-                        .then(function (data) {
-                            if (!data || data.length === 0) {
-                                document.getElementById('guestChart').parentElement.innerHTML =
-                                    '<p class="text-gray-500 text-center">Tidak ada data tamu</p>';
-                                return;
-                            }
+                    var data = @json($chartData);
+                    var mode = @json($chartMode);
+                    var year = @json($year);
 
-                            var labels = data.map(function (d) { return d.year; });
+                    if (!data || data.length === 0) {
+                        document.getElementById('guestChart').parentElement.innerHTML =
+                            '<p class="text-gray-500 text-center">Tidak ada data tamu</p>';
+                        return;
+                    }
 
-                            var serviceMap = {};
-                            data.forEach(function (d) {
-                                d.services.forEach(function (s) {
-                                    if (!serviceMap[s.service_name]) serviceMap[s.service_name] = {};
-                                    serviceMap[s.service_name][d.year] = s.total;
-                                });
-                            });
+                    var labels = data.map(function (d) { return d.label; });
 
-                            var serviceNames = Object.keys(serviceMap);
-                            var colors = [
-                                '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
-                                '#6366f1', '#06b6d4', '#14b8a6', '#84cc16'
-                            ];
-
-                            var datasets = serviceNames.map(function (name, idx) {
-                                return {
-                                    label: name,
-                                    data: labels.map(function (yr) { return serviceMap[name][yr] || 0; }),
-                                    backgroundColor: colors[idx % colors.length],
-                                };
-                            });
-
-                            new Chart(document.getElementById('guestChart'), {
-                                type: 'bar',
-                                data: { labels: labels, datasets: datasets },
-                                options: {
-                                    responsive: true,
-                                    plugins: {
-                                        legend: { position: 'bottom' },
-                                        title: { display: true, text: 'Jumlah Tamu Per Tahun' },
-                                    },
-                                    scales: {
-                                        x: { stacked: true },
-                                        y: {
-                                            stacked: true,
-                                            beginAtZero: true,
-                                            ticks: { stepSize: 1 },
-                                        },
-                                    },
-                                },
-                            });
+                    var serviceMap = {};
+                    data.forEach(function (d) {
+                        d.services.forEach(function (s) {
+                            if (!serviceMap[s.name]) serviceMap[s.name] = {};
+                            serviceMap[s.name][d.label] = s.total;
                         });
+                    });
+
+                    var serviceNames = Object.keys(serviceMap);
+                    var colors = [
+                        '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
+                        '#6366f1', '#06b6d4', '#14b8a6', '#84cc16'
+                    ];
+
+                    var datasets = serviceNames.map(function (name, idx) {
+                        return {
+                            label: name,
+                            data: labels.map(function (l) { return serviceMap[name][l] || 0; }),
+                            backgroundColor: colors[idx % colors.length],
+                        };
+                    });
+
+                    var titleText = mode === 'month'
+                        ? 'Jumlah Tamu Per Bulan Tahun ' + year
+                        : 'Jumlah Tamu Per Tahun';
+
+                    new Chart(document.getElementById('guestChart'), {
+                        type: 'bar',
+                        data: { labels: labels, datasets: datasets },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                title: { display: true, text: titleText },
+                            },
+                            scales: {
+                                x: { stacked: true },
+                                y: {
+                                    stacked: true,
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 },
+                                },
+                            },
+                        },
+                    });
                 });
             </script>
 

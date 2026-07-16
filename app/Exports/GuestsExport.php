@@ -14,7 +14,7 @@ class GuestsExport implements FromQuery, WithHeadings, WithMapping
      */
     public function query()
     {
-        return Guest::with('service'); // Pakai with() karena pakai FromQuery
+        return Guest::with('services');
     }
 
     /**
@@ -40,7 +40,7 @@ class GuestsExport implements FromQuery, WithHeadings, WithMapping
             $guest->name,
             $guest->hp,
             $guest->company,
-            $guest->service , // Nama service
+            $guest->services->name,
             $guest->created_at->format('d F Y')
         ];
     }

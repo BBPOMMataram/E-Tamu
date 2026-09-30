@@ -19,17 +19,18 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => 'password',
         ]);
 
-        // DB::table('services')->insert([
-        //     ['id' => 1, 'name' => 'Pengujian Barang Bukti Narkoba'],
-        //     ['id' => 2, 'name' => 'Pengujian Obat & Makanan'],
-        //     ['id' => 3, 'name' => 'Informasi & Pengaduan'],
-        //     ['id' => 4, 'name' => 'Sertifikasi'],
-        //     ['id' => 5, 'name' => 'Wajib Lapor'],
-        //     ['id' => 6, 'name' => 'Kunjungan'],
-        //     ['id' => 7, 'name' => 'Keperluan Pribadi'],
-        //     ['id' => 8, 'name' => 'Keperluan Lain'],
-        // ]);
+        DB::table('services')->insert([
+            ['id' => 1, 'name' => 'Pengujian Barang Bukti Narkoba'],
+            ['id' => 2, 'name' => 'Pengujian Obat & Makanan'],
+            ['id' => 3, 'name' => 'Informasi & Pengaduan'],
+            ['id' => 4, 'name' => 'Sertifikasi'],
+            ['id' => 5, 'name' => 'Wajib Lapor'],
+            ['id' => 6, 'name' => 'Kunjungan'],
+            ['id' => 7, 'name' => 'Keperluan Pribadi'],
+            ['id' => 8, 'name' => 'Keperluan Lain'],
+        ]);
     }
 }

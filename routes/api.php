@@ -12,3 +12,11 @@ Route::get('guest-book/search/{name}', [GuestController::class, 'getByName']); /
 
 // FOR CHART DASHBOARD
 Route::get('guests', [GuestController::class, 'get_guests']);
+
+// Rute API untuk Frontend E-Tamu (Next.js)
+Route::get('e-tamu/init', [\App\Http\Controllers\PresensiController::class, 'initDataApi']);
+Route::post('e-tamu/store', [\App\Http\Controllers\PresensiController::class, 'storeApi']);
+Route::post('e-tamu/survey', [\App\Http\Controllers\PresensiController::class, 'storeSurveyApi']);
+
+// Tambahkan rute ini untuk Dashboard
+Route::get('e-tamu/dashboard', [\App\Http\Controllers\DashboardController::class, 'getDashboardApi']);

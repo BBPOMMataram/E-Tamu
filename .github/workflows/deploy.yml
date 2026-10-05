@@ -1,0 +1,59 @@
+name: Deploy to server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to e-tamu.bbpommataram.id
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: 56710
+          # SSH_KEY ADALAH PRIVATE KEY YANG ADA DI GITHUB ACTION DIAMBIL DARI SERVER
+          key: ${{ secrets.SSH_KEY }}
+          debug: true
+          script: |
+            APP_DIR="/home/bbpommataram.id/E-TAMU"
+            
+            echo "[Deploy] Fetch latest code..."
+            cd $APP_DIR || exit
+            git fetch --all
+            git reset --hard origin/main
+
+            echo "[Deploy] Install dependencies..."
+            composer install --no-dev --prefer-dist --no-interaction --no-ansi
+            # dicomment karena sekarang sudah ga pake views, khusus untuk end point
+            npm ci
+            npm run build
+
+            echo "[Deploy] Run migrations..."
+            php artisan migrate --force
+
+            echo "[Deploy] Clear caches..."
+            php artisan optimize:clear
+
+            echo "[Deploy] Fix permissions..."
+            # Set owner storage & cache ke bbpom9725
+            chown -R bbpom9725:bbpom9725 $APP_DIR/storage $APP_DIR/bootstrap/cache
+
+            # Folder = 755 (drwxr-xr-x)
+            find $APP_DIR/storage -type d -exec chmod 755 {} \;
+            find $APP_DIR/bootstrap/cache -type d -exec chmod 755 {} \;
+
+            # File = 644 (-rw-r--r--)
+            find $APP_DIR/storage -type f -exec chmod 644 {} \;
+            find $APP_DIR/bootstrap/cache -type f -exec chmod 644 {} \;
+
+            # Khusus laravel.log pastikan bisa ditulis
+            touch $APP_DIR/storage/logs/laravel.log
+            chown bbpom9725:bbpom9725 $APP_DIR/storage/logs/laravel.log
+            chmod 644 $APP_DIR/storage/logs/laravel.log
+
+            echo "[Deploy] Done ✅"

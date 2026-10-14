@@ -108,9 +108,28 @@ class DashboardController extends Controller
     }
 
 
-    function Guest_download()
+    function Guest_download(Request $request)
     {
-        return Excel::download(new GuestsExport, 'guests.xlsx');
+        $year = $request->query('year');
+        $month = $request->query('month');
+        $filename = 'data-tamu';
+        if ($year) $filename .= '-' . $year;
+        if ($month) $filename .= '-bulan-' . $month;
+        $filename .= '.xlsx';
+
+        return Excel::download(new GuestsExport($year, $month), $filename);
+    }
+
+    public function downloadExcelApi(Request $request)
+    {
+        $year = $request->query('year');
+        $month = $request->query('month');
+        $filename = 'data-tamu';
+        if ($year) $filename .= '-' . $year;
+        if ($month) $filename .= '-bulan-' . $month;
+        $filename .= '.xlsx';
+
+        return Excel::download(new GuestsExport($year, $month), $filename);
     }
 
     // --- FUNGSI BARU UNTUK API NEXT.JS ---
@@ -118,6 +137,22 @@ class DashboardController extends Controller
     {
         $year = $request->query('year');
         $month = $request->query('month');
+
+        // 0. Ambil tahun-tahun sebelumnya yang memiliki data, dengan tahun sekarang sebagai yang paling akhir
+        $currentYear = (int) Carbon::now()->format('Y');
+        $yearsWithData = Guest::whereNotNull('created_at')
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int) $y)
+            ->toArray();
+
+        if (!in_array($currentYear, $yearsWithData)) {
+            $yearsWithData[] = $currentYear;
+        }
+
+        $available_years = array_values(array_filter($yearsWithData, fn($y) => $y <= $currentYear));
+        sort($available_years);
 
         // 1. Total Guests (Berdasarkan filter)
         $guestsQuery = Guest::query();
@@ -140,10 +175,16 @@ class DashboardController extends Controller
             ];
         }
 
-        // 4. Table Data (10 Data Terbaru untuk Dashboard)
+        // 4. Table Data (Paginasi 10 Data per Halaman untuk Dashboard)
+        $perPage = (int) $request->query('per_page', 10);
+        $page = (int) $request->query('page', 1);
+
         $guestsTable = clone $guestsQuery;
-        $table_data = $guestsTable->with('services')->latest()->take(10)->get()->map(function ($g) {
+        $paginatedGuests = $guestsTable->with('services')->latest()->paginate($perPage, ['*'], 'page', $page);
+
+        $table_data = $paginatedGuests->getCollection()->map(function ($g) {
             return [
+                'id' => $g->id,
                 'name' => $g->name,
                 'hp' => $g->hp,
                 'company' => $g->company,
@@ -153,6 +194,15 @@ class DashboardController extends Controller
                 'selfie' => $g->selfie
             ];
         });
+
+        $pagination = [
+            'current_page' => $paginatedGuests->currentPage(),
+            'last_page' => $paginatedGuests->lastPage(),
+            'per_page' => $paginatedGuests->perPage(),
+            'total' => $paginatedGuests->total(),
+            'from' => $paginatedGuests->firstItem() ?? 0,
+            'to' => $paginatedGuests->lastItem() ?? 0,
+        ];
 
         // 5. Chart Data (Format Khusus Chart.js)
         $monthNames = [
@@ -223,7 +273,9 @@ class DashboardController extends Controller
             'today_guests' => $today_guests,
             'services_stats' => $services_stats,
             'table_data' => $table_data,
-            'chart_data' => count($labels) > 0 ? $chart_data : null
+            'pagination' => $pagination,
+            'chart_data' => count($labels) > 0 ? $chart_data : null,
+            'available_years' => $available_years
         ]);
     }
 }

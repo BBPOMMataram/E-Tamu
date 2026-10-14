@@ -13,13 +13,14 @@ Route::post('/survey', [PresensiController::class, 'store_survey'])->name('prese
 
 Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
+Route::get('/security/guest-download', [DashboardController::class, 'Guest_download'])->name('guest.download');
+
 Route::middleware('auth')->prefix('security')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('guest', GuestController::class);
-    Route::get('guest-download', [DashboardController::class, 'Guest_download'])->name('guest.download');
 });
 
 require __DIR__ . '/auth.php';

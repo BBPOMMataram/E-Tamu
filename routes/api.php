@@ -20,3 +20,4 @@ Route::post('e-tamu/survey', [\App\Http\Controllers\PresensiController::class, '
 
 // Tambahkan rute ini untuk Dashboard
 Route::get('e-tamu/dashboard', [\App\Http\Controllers\DashboardController::class, 'getDashboardApi']);
+Route::get('e-tamu/download-excel', [\App\Http\Controllers\DashboardController::class, 'downloadExcelApi']);

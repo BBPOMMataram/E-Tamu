@@ -73,7 +73,7 @@ class DashboardController extends Controller
             $chartQuery->groupBy(DB::raw('YEAR(guests.created_at)'), DB::raw('MONTH(guests.created_at)'), 'services.name')
                 ->orderBy(DB::raw('MONTH(guests.created_at)'));
         } else {
-            $chartQuery->groupBy(DB::raw('YEAR(guests.created_at)'), DB::raw('MONTH(guests.created_at)'), 'services.name')
+            $chartQuery->groupBy(DB::raw('YEAR(guests.created_at)'), 'services.name')
                 ->orderBy(DB::raw('YEAR(guests.created_at)'));
         }
 
@@ -132,27 +132,59 @@ class DashboardController extends Controller
         return Excel::download(new GuestsExport($year, $month), $filename);
     }
 
+    private function hexToRgba(string $hex, float $alpha): string
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        return "rgba({$r}, {$g}, {$b}, {$alpha})";
+    }
+
     // --- FUNGSI BARU UNTUK API NEXT.JS ---
     public function getDashboardApi(Request $request)
     {
         $year = $request->query('year');
         $month = $request->query('month');
+        $chartYearsParam = $request->query('chart_years');
 
-        // 0. Ambil tahun-tahun sebelumnya yang memiliki data, dengan tahun sekarang sebagai yang paling akhir
+        // 0. Ambil tahun-tahun yang memiliki data di database
         $currentYear = (int) Carbon::now()->format('Y');
         $yearsWithData = Guest::whereNotNull('created_at')
             ->selectRaw('YEAR(created_at) as year')
             ->distinct()
             ->pluck('year')
             ->map(fn($y) => (int) $y)
+            ->filter(fn($y) => $y > 2000 && $y <= $currentYear + 1)
+            ->values()
             ->toArray();
 
-        if (!in_array($currentYear, $yearsWithData)) {
-            $yearsWithData[] = $currentYear;
+        if (empty($yearsWithData)) {
+            $yearsWithData = [$currentYear];
         }
 
-        $available_years = array_values(array_filter($yearsWithData, fn($y) => $y <= $currentYear));
+        $available_years = array_values(array_unique($yearsWithData));
         sort($available_years);
+
+        // Tahun yang dipilih untuk grafik batang (default awal: tahun ini / tahun terakhir yang ada datanya)
+        $selectedChartYears = [];
+        if (is_array($chartYearsParam)) {
+            $selectedChartYears = array_map('intval', $chartYearsParam);
+        } elseif (is_string($chartYearsParam) && trim($chartYearsParam) !== '') {
+            $selectedChartYears = array_map('intval', explode(',', $chartYearsParam));
+        }
+        $selectedChartYears = array_values(array_unique(array_filter($selectedChartYears, fn($y) => in_array($y, $available_years))));
+        sort($selectedChartYears);
+
+        if (empty($selectedChartYears)) {
+            $defaultChartYear = in_array($currentYear, $available_years)
+                ? $currentYear
+                : $available_years[count($available_years) - 1];
+            $selectedChartYears = [$defaultChartYear];
+        }
 
         // 1. Total Guests (Berdasarkan filter)
         $guestsQuery = Guest::query();
@@ -205,68 +237,98 @@ class DashboardController extends Controller
         ];
 
         // 5. Chart Data (Format Khusus Chart.js)
-        $monthNames = [
-            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
-        ];
-
-        $chartQuery = Guest::join('services', 'guests.service', '=', 'services.id')
+        $chartRaw = Guest::join('services', 'guests.service', '=', 'services.id')
+            ->whereIn(DB::raw('YEAR(guests.created_at)'), $selectedChartYears)
             ->select(
                 DB::raw('YEAR(guests.created_at) as year'),
-                DB::raw('MONTH(guests.created_at) as month'),
                 DB::raw('count(*) as guests_total'),
                 'services.name as service_name'
-            );
+            )
+            ->groupBy(DB::raw('YEAR(guests.created_at)'), 'services.name')
+            ->orderBy(DB::raw('YEAR(guests.created_at)'))
+            ->get();
 
-        if ($year) $chartQuery->whereYear('guests.created_at', $year);
-        if ($month) $chartQuery->whereMonth('guests.created_at', $month);
-
-        $chartMode = $year && !$month ? 'month' : 'year';
-
-        if ($chartMode === 'month') {
-            $chartQuery->groupBy(DB::raw('YEAR(guests.created_at)'), DB::raw('MONTH(guests.created_at)'), 'services.name')
-                ->orderBy(DB::raw('MONTH(guests.created_at)'));
-        } else {
-            $chartQuery->groupBy(DB::raw('YEAR(guests.created_at)'), DB::raw('MONTH(guests.created_at)'), 'services.name')
-                ->orderBy(DB::raw('YEAR(guests.created_at)'));
-        }
-
-        $chartRaw = $chartQuery->get();
-
-        $labels = [];
         $serviceMap = [];
-
         foreach ($chartRaw as $item) {
-            $label = $chartMode === 'month' ? ($monthNames[(int)$item->month] ?? $item->month) : (string)$item->year;
-            if (!in_array($label, $labels)) {
-                $labels[] = $label;
-            }
-            $serviceMap[$item->service_name][$label] = $item->guests_total;
+            $yrLabel = (string) $item->year;
+            $serviceMap[$item->service_name][$yrLabel] = (int) $item->guests_total;
         }
 
         $colors = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#06b6d4', '#14b8a6', '#84cc16'];
-        $datasets = [];
-        $colorIdx = 0;
-
-        foreach ($services as $service) {
-            $dataPoints = [];
-            foreach ($labels as $lbl) {
-                $dataPoints[] = $serviceMap[$service->name][$lbl] ?? 0;
-            }
-            
-            $datasets[] = [
-                'label' => $service->name,
-                'data' => $dataPoints,
-                'backgroundColor' => $colors[$colorIdx % count($colors)]
+        $serviceLegend = [];
+        foreach ($services as $sIdx => $service) {
+            $serviceLegend[] = [
+                'name' => $service->name,
+                'color' => $colors[$sIdx % count($colors)],
             ];
-            $colorIdx++;
         }
 
-        $chart_data = [
-            'labels' => $labels,
-            'datasets' => $datasets
-        ];
+        if (count($selectedChartYears) <= 1) {
+            // Tampilan 1 tahun: persis seperti semula
+            $singleYearLabel = (string) $selectedChartYears[0];
+            $labels = [$singleYearLabel];
+            $datasets = [];
+            $colorIdx = 0;
+
+            foreach ($services as $service) {
+                $datasets[] = [
+                    'label' => $service->name,
+                    'data' => [$serviceMap[$service->name][$singleYearLabel] ?? 0],
+                    'backgroundColor' => $colors[$colorIdx % count($colors)],
+                ];
+                $colorIdx++;
+            }
+
+            $chart_data = [
+                'labels' => $labels,
+                'datasets' => $datasets,
+                'is_comparison' => false,
+                'service_legend' => $serviceLegend,
+            ];
+        } else {
+            // Tampilan perbandingan 2+ tahun: batang tiap keperluan bersebelahan antar tahun (misal Wajib Lapor 2023 di sebelah Wajib Lapor 2024)
+            $labels = $services->pluck('name')->values()->toArray();
+            $datasets = [];
+
+            foreach ($selectedChartYears as $yrIdx => $yr) {
+                $yrStr = (string) $yr;
+                $dataPoints = [];
+                $bgColors = [];
+                $borderColors = [];
+
+                foreach ($services as $sIdx => $service) {
+                    $dataPoints[] = $serviceMap[$service->name][$yrStr] ?? 0;
+                    $baseHex = $colors[$sIdx % count($colors)];
+                    $borderColors[] = $baseHex;
+
+                    if ($yrIdx === 0) {
+                        $bgColors[] = $baseHex;
+                    } elseif ($yrIdx === 1) {
+                        $bgColors[] = $this->hexToRgba($baseHex, 0.58);
+                    } elseif ($yrIdx === 2) {
+                        $bgColors[] = $this->hexToRgba($baseHex, 0.35);
+                    } else {
+                        $bgColors[] = $this->hexToRgba($baseHex, 0.78);
+                    }
+                }
+
+                $datasets[] = [
+                    'label' => 'Tahun ' . $yrStr,
+                    'year' => $yrStr,
+                    'data' => $dataPoints,
+                    'backgroundColor' => $bgColors,
+                    'borderColor' => $borderColors,
+                    'borderWidth' => $yrIdx === 0 ? 0 : 2,
+                ];
+            }
+
+            $chart_data = [
+                'labels' => $labels,
+                'datasets' => $datasets,
+                'is_comparison' => true,
+                'service_legend' => $serviceLegend,
+            ];
+        }
 
         return response()->json([
             'total_guests' => $total_guests,
@@ -274,7 +336,8 @@ class DashboardController extends Controller
             'services_stats' => $services_stats,
             'table_data' => $table_data,
             'pagination' => $pagination,
-            'chart_data' => count($labels) > 0 ? $chart_data : null,
+            'chart_data' => $chart_data,
+            'selected_chart_years' => $selectedChartYears,
             'available_years' => $available_years
         ]);
     }

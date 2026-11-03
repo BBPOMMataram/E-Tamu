@@ -153,6 +153,12 @@ class PresensiController extends Controller
         $data->pangkat = $request->pangkat;
         $data->jabatan = $request->jabatan;
         
+        if ($request->filled('face_descriptor')) {
+            $data->face_descriptor = is_array($request->face_descriptor)
+                ? json_encode($request->face_descriptor)
+                : $request->face_descriptor;
+        }
+
         // Simpan jarak yang dihitung secara valid oleh backend
         $data->distance = $backendDistance; 
 
@@ -193,5 +199,23 @@ class PresensiController extends Controller
         $guest->save();
 
         return response()->json(['message' => 'Survey berhasil disimpan']);
+    }
+
+    /**
+     * Mengambil daftar deskriptor wajah tamu yang terdaftar untuk Face Recognition
+     */
+    public function getFacesApi()
+    {
+        $guests = Guest::whereNotNull('face_descriptor')
+            ->where('face_descriptor', '!=', '')
+            ->select('id', 'name', 'hp', 'company', 'address', 'email', 'pangkat', 'jabatan', 'face_descriptor')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('name')
+            ->values();
+
+        return response()->json([
+            'faces' => $guests
+        ]);
     }
 }

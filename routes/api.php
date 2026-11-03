@@ -15,6 +15,7 @@ Route::get('guests', [GuestController::class, 'get_guests']);
 
 // Rute API untuk Frontend E-Tamu (Next.js)
 Route::get('e-tamu/init', [\App\Http\Controllers\PresensiController::class, 'initDataApi']);
+Route::get('e-tamu/faces', [\App\Http\Controllers\PresensiController::class, 'getFacesApi']);
 Route::post('e-tamu/store', [\App\Http\Controllers\PresensiController::class, 'storeApi']);
 Route::post('e-tamu/survey', [\App\Http\Controllers\PresensiController::class, 'storeSurveyApi']);
 
